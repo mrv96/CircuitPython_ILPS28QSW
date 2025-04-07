@@ -44,6 +44,7 @@ from enum import IntEnum
 from ctypes import c_uint8, c_uint16, c_int16, c_int32, c_float, Structure, sizeof
 from busio import I2C
 from micropython import const
+from adafruit_bus_device.i2c_device import I2CDevice
 
 
 DRV_BYTE_ORDER = 'little'
@@ -539,8 +540,7 @@ class RefMd(Structure):
 
 class ILPS28QSW:
     def __init__(self, i2c:I2C, address:int=I2C_ADD) -> None:
-        self.i2c = i2c
-        self.address = address
+        self.device = I2CDevice(i2c, address)
 
 
     def _read_reg(self, reg:int, data:bytearray) -> None:
@@ -551,7 +551,8 @@ class ILPS28QSW:
             reg (int): Register to read.
             data: Buffer that stores the data read.
         """
-        self.i2c.writeto_then_readfrom(self.address, reg.to_bytes(), data)
+        with self.device as i2c:
+            i2c.write_then_readinto(reg.to_bytes(), data)
 
 
     def _write_reg(self, reg:int, data:bytes) -> None:
@@ -562,7 +563,8 @@ class ILPS28QSW:
             reg (int): Register to write.
             data: Data to write into the register.
         """
-        self.i2c.writeto(self.address, reg.to_bytes() + data)
+        with self.device as i2c:
+            i2c.write(reg.to_bytes() + data)
 
 
     @staticmethod
