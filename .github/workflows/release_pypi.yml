@@ -17,3 +17,4 @@ jobs:
       with:
         pypi-username: ${{ secrets.pypi_username }}
         pypi-password: ${{ secrets.pypi_password }}
+        python-version: 3.9
