@@ -1,5 +1,5 @@
 Read data polling
-------------
+-----------------
 
 Ensure your device works reading data in polling.
 
