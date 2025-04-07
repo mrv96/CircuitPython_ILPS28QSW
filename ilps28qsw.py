@@ -647,22 +647,14 @@ class ILPS28QSW:
         self._read_reg(I3C_IF_CTRL, i3c_if_ctrl_buf)
         val = BusMode()
 
-        if i3c_if_ctrl.asf_on == Filter.AUTO:
-            val.filter = Filter.AUTO
-        elif i3c_if_ctrl.asf_on == Filter.ALWAYS_ON:
-            val.filter = Filter.ALWAYS_ON
-        else:
+        try:
+            val.filter = Filter(i3c_if_ctrl.asf_on)
+        except ValueError:
             val.filter = Filter.AUTO
 
-        if i3c_if_ctrl.I3C_Bus_Avb_Sel == BusAvbTime.BUS_AVB_TIME_50us:
-            val.bus_avb_time = BusAvbTime.BUS_AVB_TIME_50us
-        elif i3c_if_ctrl.I3C_Bus_Avb_Sel == BusAvbTime.BUS_AVB_TIME_2us:
-            val.bus_avb_time = BusAvbTime.BUS_AVB_TIME_2us
-        elif i3c_if_ctrl.I3C_Bus_Avb_Sel == BusAvbTime.BUS_AVB_TIME_1ms:
-            val.bus_avb_time = BusAvbTime.BUS_AVB_TIME_1ms
-        elif i3c_if_ctrl.I3C_Bus_Avb_Sel == BusAvbTime.BUS_AVB_TIME_25ms:
-            val.bus_avb_time = BusAvbTime.BUS_AVB_TIME_25ms
-        else:
+        try:
+            val.bus_avb_time = BusAvbTime(i3c_if_ctrl.I3C_Bus_Avb_Sel)
+        except ValueError:
             val.bus_avb_time = BusAvbTime.BUS_AVB_TIME_50us
 
         return val
@@ -851,61 +843,24 @@ class ILPS28QSW:
 
         self._read_reg(CTRL_REG1, reg)
 
-        if ctrl_reg2.fs_mode == Fs.ILPS28QSW_1260hPa:
-            val.fs = Fs.ILPS28QSW_1260hPa
-        elif ctrl_reg2.fs_mode == Fs.ILPS28QSW_4060hPa:
-            val.fs = Fs.ILPS28QSW_4060hPa
-        else:
+        try:
+            val.fs = Fs(ctrl_reg2.fs_mode)
+        except ValueError:
             val.fs = Fs.ILPS28QSW_1260hPa
 
-        if ctrl_reg1.odr == Odr.ILPS28QSW_ONE_SHOT:
-            val.odr = Odr.ILPS28QSW_ONE_SHOT
-        elif ctrl_reg1.odr == Odr.ILPS28QSW_1Hz:
-            val.odr = Odr.ILPS28QSW_1Hz
-        elif ctrl_reg1.odr == Odr.ILPS28QSW_4Hz:
-            val.odr = Odr.ILPS28QSW_4Hz
-        elif ctrl_reg1.odr == Odr.ILPS28QSW_10Hz:
-            val.odr = Odr.ILPS28QSW_10Hz
-        elif ctrl_reg1.odr == Odr.ILPS28QSW_25Hz:
-            val.odr = Odr.ILPS28QSW_25Hz
-        elif ctrl_reg1.odr == Odr.ILPS28QSW_50Hz:
-            val.odr = Odr.ILPS28QSW_50Hz
-        elif ctrl_reg1.odr == Odr.ILPS28QSW_75Hz:
-            val.odr = Odr.ILPS28QSW_75Hz
-        elif ctrl_reg1.odr == Odr.ILPS28QSW_100Hz:
-            val.odr = Odr.ILPS28QSW_100Hz
-        elif ctrl_reg1.odr == Odr.ILPS28QSW_200Hz:
-            val.odr = Odr.ILPS28QSW_200Hz
-        else:
+        try:
+            val.odr = Odr(ctrl_reg1.odr)
+        except ValueError:
             val.odr = Odr.ILPS28QSW_ONE_SHOT
 
-        if ctrl_reg1.avg == Avg.ILPS28QSW_4_AVG:
-            val.avg = Avg.ILPS28QSW_4_AVG
-        elif ctrl_reg1.avg == Avg.ILPS28QSW_8_AVG:
-            val.avg = Avg.ILPS28QSW_8_AVG
-        elif ctrl_reg1.avg == Avg.ILPS28QSW_16_AVG:
-            val.avg = Avg.ILPS28QSW_16_AVG
-        elif ctrl_reg1.avg == Avg.ILPS28QSW_32_AVG:
-            val.avg = Avg.ILPS28QSW_32_AVG
-        elif ctrl_reg1.avg == Avg.ILPS28QSW_64_AVG:
-            val.avg = Avg.ILPS28QSW_64_AVG
-        elif ctrl_reg1.avg == Avg.ILPS28QSW_128_AVG:
-            val.avg = Avg.ILPS28QSW_128_AVG
-        elif ctrl_reg1.avg == Avg.ILPS28QSW_256_AVG:
-            val.avg = Avg.ILPS28QSW_256_AVG
-        elif ctrl_reg1.avg == Avg.ILPS28QSW_512_AVG:
-            val.avg = Avg.ILPS28QSW_512_AVG
-        else:
+        try:
+            val.avg = Avg(ctrl_reg1.avg)
+        except ValueError:
             val.avg = Avg.ILPS28QSW_4_AVG
 
-        tmp = (ctrl_reg2.lfpf_cfg << 2) | ctrl_reg2.en_lpfp
-        if tmp == Lpf.LPF_DISABLE:
-            val.lpf = Lpf.LPF_DISABLE
-        elif tmp == Lpf.LPF_ODR_DIV_4:
-            val.lpf = Lpf.LPF_ODR_DIV_4
-        elif tmp == Lpf.LPF_ODR_DIV_9:
-            val.lpf = Lpf.LPF_ODR_DIV_9
-        else:
+        try:
+            val.lpf = Lpf((ctrl_reg2.lfpf_cfg << 2) | ctrl_reg2.en_lpfp)
+        except ValueError:
             val.lpf = Lpf.LPF_DISABLE
 
         val.interleaved_mode = ctrl_reg3.ah_qvar_p_auto_en
