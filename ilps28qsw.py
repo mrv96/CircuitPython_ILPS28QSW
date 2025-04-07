@@ -40,16 +40,16 @@ __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/mrv96/CircuitPython_ILPS28QSW.git"
 
 
+from ctypes import Structure, c_float, c_int16, c_int32, c_uint8, c_uint16, sizeof
 from enum import IntEnum
-from ctypes import c_uint8, c_uint16, c_int16, c_int32, c_float, Structure, sizeof
+
+from adafruit_bus_device.i2c_device import I2CDevice
 from busio import I2C
 from micropython import const
-from adafruit_bus_device.i2c_device import I2CDevice
 
+DRV_BYTE_ORDER = "little"
 
-DRV_BYTE_ORDER = 'little'
-
-if DRV_BYTE_ORDER == 'little':
+if DRV_BYTE_ORDER == "little":
     from ctypes import LittleEndianStructure as EndianStructure
 else:
     from ctypes import BigEndianStructure as EndianStructure
@@ -118,100 +118,118 @@ _PROPERTY_ENABLE = 1
 # } ucf_line_t;
 
 
-I2C_ADD = const(0x5C) # I2C Device Address 7 bit format
-ID      = const(0xB4) # Device Identification (Who am I)
+I2C_ADD = const(0x5C)  # I2C Device Address 7 bit format
+ID = const(0xB4)  # Device Identification (Who am I)
 
 
 INTERRUPT_CFG = const(0x0B)
+
+
 class InterruptCfg(EndianStructure):
     _fields_ = [
-        ('phe', c_uint8, 1),
-        ('ple', c_uint8, 1),
-        ('lir', c_uint8, 1),
-        ('not_used_01', c_uint8, 1),
-        ('reset_az', c_uint8, 1),
-        ('autozero', c_uint8, 1),
-        ('reset_arp', c_uint8, 1),
-        ('autorefp', c_uint8, 1),
+        ("phe", c_uint8, 1),
+        ("ple", c_uint8, 1),
+        ("lir", c_uint8, 1),
+        ("not_used_01", c_uint8, 1),
+        ("reset_az", c_uint8, 1),
+        ("autozero", c_uint8, 1),
+        ("reset_arp", c_uint8, 1),
+        ("autorefp", c_uint8, 1),
     ]
 
 
 THS_P_L = const(0x0C)
+
+
 # TODO: this may be a normal class
 class ThsPL(Structure):
     _fields_ = [
-        ('ths', c_uint8, 8),
+        ("ths", c_uint8, 8),
     ]
 
 
 THS_P_H = const(0x0D)
+
+
 class ThsPH(EndianStructure):
     _fields_ = [
-        ('ths', c_uint8, 7),
-        ('not_used_01', c_uint8, 1),
+        ("ths", c_uint8, 7),
+        ("not_used_01", c_uint8, 1),
     ]
 
 
 IF_CTRL = const(0x0E)
+
+
 class IfCtrl(EndianStructure):
     _fields_ = [
-        ('not_used_01', c_uint8, 4),
-        ('sda_pu_en', c_uint8, 1),
-        ('not_used_02', c_uint8, 3),
+        ("not_used_01", c_uint8, 4),
+        ("sda_pu_en", c_uint8, 1),
+        ("not_used_02", c_uint8, 3),
     ]
 
 
-WHO_AM_I  = const(0x0F)
+WHO_AM_I = const(0x0F)
 CTRL_REG1 = const(0x10)
+
+
 class CtrlReg1(EndianStructure):
     _fields_ = [
-        ('avg', c_uint8, 3),
-        ('odr', c_uint8, 4),
-        ('not_used_01', c_uint8, 1),
+        ("avg", c_uint8, 3),
+        ("odr", c_uint8, 4),
+        ("not_used_01", c_uint8, 1),
     ]
 
 
 CTRL_REG2 = const(0x11)
+
+
 class CtrlReg2(EndianStructure):
     _fields_ = [
-        ('oneshot', c_uint8, 1),
-        ('not_used_01', c_uint8, 1),
-        ('swreset', c_uint8, 1),
-        ('bdu', c_uint8, 1),
-        ('en_lpfp', c_uint8, 1),
-        ('lfpf_cfg', c_uint8, 1),
-        ('fs_mode', c_uint8, 1),
-        ('boot', c_uint8, 1),
+        ("oneshot", c_uint8, 1),
+        ("not_used_01", c_uint8, 1),
+        ("swreset", c_uint8, 1),
+        ("bdu", c_uint8, 1),
+        ("en_lpfp", c_uint8, 1),
+        ("lfpf_cfg", c_uint8, 1),
+        ("fs_mode", c_uint8, 1),
+        ("boot", c_uint8, 1),
     ]
 
 
 CTRL_REG3 = const(0x12)
+
+
 class CtrlReg3(EndianStructure):
     _fields_ = [
-        ('if_add_inc', c_uint8, 1),
-        ('not_used_01', c_uint8, 4),
-        ('ah_qvar_p_auto_en', c_uint8, 1),
-        ('not_used_02', c_uint8, 1),
-        ('ah_qvar_en', c_uint8, 1),
+        ("if_add_inc", c_uint8, 1),
+        ("not_used_01", c_uint8, 4),
+        ("ah_qvar_p_auto_en", c_uint8, 1),
+        ("not_used_02", c_uint8, 1),
+        ("ah_qvar_en", c_uint8, 1),
     ]
 
 
 FIFO_CTRL = const(0x14)
+
+
 class FifoCtrl(EndianStructure):
     _fields_ = [
-        ('f_mode', c_uint8, 2),
-        ('trig_modes', c_uint8, 1),
-        ('stop_on_wtm', c_uint8, 1),
-        ('ah_qvar_p_fifo_en', c_uint8, 1),
-        ('not_used_01', c_uint8, 3),
+        ("f_mode", c_uint8, 2),
+        ("trig_modes", c_uint8, 1),
+        ("stop_on_wtm", c_uint8, 1),
+        ("ah_qvar_p_fifo_en", c_uint8, 1),
+        ("not_used_01", c_uint8, 3),
     ]
 
 
 FIFO_WTM = const(0x15)
+
+
 class FifoWtm(EndianStructure):
     _fields_ = [
-        ('wtm', c_uint8, 7),
-        ('not_used_01', c_uint8, 1),
+        ("wtm", c_uint8, 7),
+        ("not_used_01", c_uint8, 1),
     ]
 
 
@@ -230,55 +248,65 @@ REF_P_L = const(0x16)
 
 
 I3C_IF_CTRL = const(0x19)
+
+
 class I3CIfCtrl(EndianStructure):
     _fields_ = [
-        ('I3C_Bus_Avb_Sel', c_uint8, 2),
-        ('not_used_02', c_uint8, 3),
-        ('asf_on', c_uint8, 1),
-        ('not_used_01', c_uint8, 2),
+        ("I3C_Bus_Avb_Sel", c_uint8, 2),
+        ("not_used_02", c_uint8, 3),
+        ("asf_on", c_uint8, 1),
+        ("not_used_01", c_uint8, 2),
     ]
 
 
-RPDS_L     = const(0x1A)
-RPDS_H     = const(0x1B)
+RPDS_L = const(0x1A)
+RPDS_H = const(0x1B)
 INT_SOURCE = const(0x24)
+
+
 class IntSource(EndianStructure):
     _fields_ = [
-        ('ph', c_uint8, 1),
-        ('pl', c_uint8, 1),
-        ('ia', c_uint8, 1),
-        ('not_used_01', c_uint8, 4),
-        ('boot_on', c_uint8, 1),
+        ("ph", c_uint8, 1),
+        ("pl", c_uint8, 1),
+        ("ia", c_uint8, 1),
+        ("not_used_01", c_uint8, 4),
+        ("boot_on", c_uint8, 1),
     ]
 
 
 FIFO_STATUS1 = const(0x25)
+
+
 # TODO: this may be a normal class
 class FifoStatus1(Structure):
     _fields_ = [
-        ('fss', c_uint8, 8),
+        ("fss", c_uint8, 8),
     ]
 
 
 FIFO_STATUS2 = const(0x26)
+
+
 class FifoStatus2(EndianStructure):
     _fields_ = [
-        ('not_used_01', c_uint8, 5),
-        ('fifo_full_ia', c_uint8, 1),
-        ('fifo_ovr_ia', c_uint8, 1),
-        ('fifo_wtm_ia', c_uint8, 1),
+        ("not_used_01", c_uint8, 5),
+        ("fifo_full_ia", c_uint8, 1),
+        ("fifo_ovr_ia", c_uint8, 1),
+        ("fifo_wtm_ia", c_uint8, 1),
     ]
 
 
 STATUS = const(0x27)
+
+
 class Status(EndianStructure):
     _fields_ = [
-        ('p_da', c_uint8, 1),
-        ('t_da', c_uint8, 1),
-        ('not_used_01', c_uint8, 2),
-        ('p_or', c_uint8, 1),
-        ('t_or', c_uint8, 1),
-        ('not_used_02', c_uint8, 2),
+        ("p_da", c_uint8, 1),
+        ("t_da", c_uint8, 1),
+        ("not_used_01", c_uint8, 2),
+        ("p_or", c_uint8, 1),
+        ("t_or", c_uint8, 1),
+        ("not_used_02", c_uint8, 2),
     ]
 
 
@@ -333,217 +361,216 @@ FIFO_DATA_OUT_PRESS_H = const(0x7A)
 
 class ID(Structure):
     _fields_ = [
-        ('whoami', c_uint8),
+        ("whoami", c_uint8),
     ]
 
 
 class Filter(IntEnum):
-    AUTO      = 0x00 # anti-spike filters managed by protocol
-    ALWAYS_ON = 0x01 # anti-spike filters always on
+    AUTO = 0x00  # anti-spike filters managed by protocol
+    ALWAYS_ON = 0x01  # anti-spike filters always on
 
 
 class BusAvbTime(IntEnum):
-    BUS_AVB_TIME_50us = 0x00 # bus available time equal to 50 us
-    BUS_AVB_TIME_2us  = 0x01 # bus available time equal to 2 us
-    BUS_AVB_TIME_1ms  = 0x02 # bus available time equal to 1 ms
-    BUS_AVB_TIME_25ms = 0x03 # bus available time equal to 25 ms
+    BUS_AVB_TIME_50us = 0x00  # bus available time equal to 50 us
+    BUS_AVB_TIME_2us = 0x01  # bus available time equal to 2 us
+    BUS_AVB_TIME_1ms = 0x02  # bus available time equal to 1 ms
+    BUS_AVB_TIME_25ms = 0x03  # bus available time equal to 25 ms
 
 
 # TODO: this may be a normal class
 class BusMode(Structure):
     _fields_ = [
-        ('filter', c_uint8),
-        ('bus_avb_time', c_uint8),
+        ("filter", c_uint8),
+        ("bus_avb_time", c_uint8),
     ]
 
 
 class Init(IntEnum):
-    DRV_RDY = 0x00 # Initialize the device for driver usage
-    BOOT    = 0x01 # Restore calib. param. ( it takes 10ms )
-    RESET   = 0x02 # Reset configuration registers
+    DRV_RDY = 0x00  # Initialize the device for driver usage
+    BOOT = 0x01  # Restore calib. param. ( it takes 10ms )
+    RESET = 0x02  # Reset configuration registers
 
 
 class Stat(Structure):
     _fields_ = [
-        ('sw_reset', c_uint8, 1), # Restoring configuration registers.
-        ('boot', c_uint8, 1), # Restoring calibration parameters.
-        ('drdy_pres', c_uint8, 1), # Pressure data ready.
-        ('drdy_temp', c_uint8, 1), # Temperature data ready.
-        ('ovr_pres', c_uint8, 1), # Pressure data overrun.
-        ('ovr_temp', c_uint8, 1), # Temperature data overrun.
-        ('end_meas', c_uint8, 1), # Single measurement is finished.
-        ('ref_done', c_uint8, 1), # Auto-Zero value is set.
+        ("sw_reset", c_uint8, 1),  # Restoring configuration registers.
+        ("boot", c_uint8, 1),  # Restoring calibration parameters.
+        ("drdy_pres", c_uint8, 1),  # Pressure data ready.
+        ("drdy_temp", c_uint8, 1),  # Temperature data ready.
+        ("ovr_pres", c_uint8, 1),  # Pressure data overrun.
+        ("ovr_temp", c_uint8, 1),  # Temperature data overrun.
+        ("end_meas", c_uint8, 1),  # Single measurement is finished.
+        ("ref_done", c_uint8, 1),  # Auto-Zero value is set.
     ]
 
 
 # TODO: this may be a normal class
 class PinConf(Structure):
     _fields_ = [
-        ('sda_pull_up', c_uint8, 1), # 1 = pull-up always disabled
+        ("sda_pull_up", c_uint8, 1),  # 1 = pull-up always disabled
     ]
 
 
 # TODO: this may be a normal class
 class AllSources(Structure):
     _fields_ = [
-        ('drdy_pres', c_uint8, 1), # Pressure data ready
-        ('drdy_temp', c_uint8, 1), # Temperature data ready
-        ('over_pres', c_uint8, 1), # Over pressure event
-        ('under_pres', c_uint8, 1), # Under pressure event
-        ('thrsld_pres', c_uint8, 1), # Over/Under pressure event
-        ('fifo_full', c_uint8, 1), # FIFO full
-        ('fifo_ovr', c_uint8, 1), # FIFO overrun
-        ('fifo_th', c_uint8, 1), # FIFO threshold reached
+        ("drdy_pres", c_uint8, 1),  # Pressure data ready
+        ("drdy_temp", c_uint8, 1),  # Temperature data ready
+        ("over_pres", c_uint8, 1),  # Over pressure event
+        ("under_pres", c_uint8, 1),  # Under pressure event
+        ("thrsld_pres", c_uint8, 1),  # Over/Under pressure event
+        ("fifo_full", c_uint8, 1),  # FIFO full
+        ("fifo_ovr", c_uint8, 1),  # FIFO overrun
+        ("fifo_th", c_uint8, 1),  # FIFO threshold reached
     ]
 
 
 class Fs(IntEnum):
-    ILPS28QSW_1260hPa = 0x00,
-    ILPS28QSW_4060hPa = 0x01,
+    ILPS28QSW_1260hPa = (0x00,)
+    ILPS28QSW_4060hPa = (0x01,)
 
 
 class Odr(IntEnum):
-    ILPS28QSW_ONE_SHOT = 0x00, # Device in power down till software trigger
-    ILPS28QSW_1Hz      = 0x01,
-    ILPS28QSW_4Hz      = 0x02,
-    ILPS28QSW_10Hz     = 0x03,
-    ILPS28QSW_25Hz     = 0x04,
-    ILPS28QSW_50Hz     = 0x05,
-    ILPS28QSW_75Hz     = 0x06,
-    ILPS28QSW_100Hz    = 0x07,
-    ILPS28QSW_200Hz    = 0x08,
+    ILPS28QSW_ONE_SHOT = (0x00,)  # Device in power down till software trigger
+    ILPS28QSW_1Hz = (0x01,)
+    ILPS28QSW_4Hz = (0x02,)
+    ILPS28QSW_10Hz = (0x03,)
+    ILPS28QSW_25Hz = (0x04,)
+    ILPS28QSW_50Hz = (0x05,)
+    ILPS28QSW_75Hz = (0x06,)
+    ILPS28QSW_100Hz = (0x07,)
+    ILPS28QSW_200Hz = (0x08,)
 
 
 class Avg(IntEnum):
-    ILPS28QSW_4_AVG   = 0,
-    ILPS28QSW_8_AVG   = 1,
-    ILPS28QSW_16_AVG  = 2,
-    ILPS28QSW_32_AVG  = 3,
-    ILPS28QSW_64_AVG  = 4,
-    ILPS28QSW_128_AVG = 5,
-    ILPS28QSW_256_AVG = 6,
-    ILPS28QSW_512_AVG = 7,
+    ILPS28QSW_4_AVG = (0,)
+    ILPS28QSW_8_AVG = (1,)
+    ILPS28QSW_16_AVG = (2,)
+    ILPS28QSW_32_AVG = (3,)
+    ILPS28QSW_64_AVG = (4,)
+    ILPS28QSW_128_AVG = (5,)
+    ILPS28QSW_256_AVG = (6,)
+    ILPS28QSW_512_AVG = (7,)
 
 
 class Lpf(IntEnum):
-    LPF_DISABLE   = 0,
-    LPF_ODR_DIV_4 = 1,
-    LPF_ODR_DIV_9 = 3,
+    LPF_DISABLE = (0,)
+    LPF_ODR_DIV_4 = (1,)
+    LPF_ODR_DIV_9 = (3,)
 
 
 # TODO: this may be a normal class
 class Md(Structure):
     _fields_ = [
-        ('fs', c_uint8),
-        ('odr', c_uint8),
-        ('avg', c_uint8),
-        ('lpf', c_uint8),
-        ('interleaved_mode', c_uint8),
+        ("fs", c_uint8),
+        ("odr", c_uint8),
+        ("avg", c_uint8),
+        ("lpf", c_uint8),
+        ("interleaved_mode", c_uint8),
     ]
 
 
 # TODO: this may be a normal class
 class _Pressure(Structure):
     _fields_ = [
-        ('hpa', c_float),
-        ('raw', c_int32), # 32 bit signed-left algned  format left
+        ("hpa", c_float),
+        ("raw", c_int32),  # 32 bit signed-left algned  format left
     ]
 
 
 # TODO: this may be a normal class
 class _Heat(Structure):
     _fields_ = [
-        ('deg_c', c_float),
-        ('raw', c_int16),
+        ("deg_c", c_float),
+        ("raw", c_int16),
     ]
 
 
 # TODO: this may be a normal class
 class _AhQvar(Structure):
     _fields_ = [
-        ('lsb', c_int32), # 24 bit properly right aligned
+        ("lsb", c_int32),  # 24 bit properly right aligned
     ]
 
 
 # TODO: this may be a normal class
 class Data(Structure):
     _fields_ = [
-        ('pressure', _Pressure),
-        ('heat', _Heat),
-        ('ah_qvar', _AhQvar),
+        ("pressure", _Pressure),
+        ("heat", _Heat),
+        ("ah_qvar", _AhQvar),
     ]
 
 
 # TODO: this may be a normal class
 class AhQvarData(Structure):
     _fields_ = [
-        ('mv', c_float), # value converted in mV
-        ('lsb', c_int32), # 24 bit properly right aligned
-        ('raw', c_int32), # 32 bit signed-left algned  format left
+        ("mv", c_float),  # value converted in mV
+        ("lsb", c_int32),  # 24 bit properly right aligned
+        ("raw", c_int32),  # 32 bit signed-left algned  format left
     ]
 
 
 class Operation(IntEnum):
-    BYPASS           = 0,
-    FIFO             = 1,
-    STREAM           = 2,
-    STREAM_TO_FIFO   = 7, # Dynamic-Stream, FIFO on Trigger
-    BYPASS_TO_STREAM = 6, # Bypass, Dynamic-Stream on Trigger
-    BYPASS_TO_FIFO   = 5, # Bypass, FIFO on Trigger
+    BYPASS = (0,)
+    FIFO = (1,)
+    STREAM = (2,)
+    STREAM_TO_FIFO = (7,)  # Dynamic-Stream, FIFO on Trigger
+    BYPASS_TO_STREAM = (6,)  # Bypass, Dynamic-Stream on Trigger
+    BYPASS_TO_FIFO = (5,)  # Bypass, FIFO on Trigger
 
 
 # TODO: this may be a normal class
 class FifoMd(Structure):
     _fields_ = [
-        ('operation', c_uint8),
-        ('watermark', c_uint8, 7), # (0 disable) max 128.
+        ("operation", c_uint8),
+        ("watermark", c_uint8, 7),  # (0 disable) max 128.
     ]
 
 
 # TODO: this may be a normal class
 class FifoData(Structure):
     _fields_ = [
-        ('hpa', c_float),
-        ('lsb', c_int32), # 24 bit properly right aligned
-        ('raw', c_int32),
+        ("hpa", c_float),
+        ("lsb", c_int32),  # 24 bit properly right aligned
+        ("raw", c_int32),
     ]
 
 
 # TODO: this may be a normal class
 class IntMode(Structure):
     _fields_ = [
-        ('int_latched', c_uint8, 1),
+        ("int_latched", c_uint8, 1),
     ]
 
 
 class IntThMd(Structure):
     _fields_ = [
-        ('threshold', c_uint16), # Threshold in hPa * 16 (@1260hPa)
-                                 # Threshold in hPa * 8  (@4060hPa)
-        ('over_th', c_uint8, 1), # Pressure data over threshold event
-        ('under_th', c_uint8, 1), # Pressure data under threshold event
+        ("threshold", c_uint16),  # Threshold in hPa * 16 (@1260hPa)
+        # Threshold in hPa * 8  (@4060hPa)
+        ("over_th", c_uint8, 1),  # Pressure data over threshold event
+        ("under_th", c_uint8, 1),  # Pressure data under threshold event
     ]
 
 
 class ApplyRef(IntEnum):
     OUT_AND_INTERRUPT = 0
-    ONLY_INTERRUPT    = 1
-    RST_REFS          = 2
+    ONLY_INTERRUPT = 1
+    RST_REFS = 2
 
 
 class RefMd(Structure):
     _fields_ = [
-        ('apply_ref', c_uint8),
-        ('get_ref', c_uint8, 1), # Use current pressure value as reference
+        ("apply_ref", c_uint8),
+        ("get_ref", c_uint8, 1),  # Use current pressure value as reference
     ]
 
 
 class ILPS28QSW:
-    def __init__(self, i2c:I2C, address:int=I2C_ADD) -> None:
+    def __init__(self, i2c: I2C, address: int = I2C_ADD) -> None:
         self.device = I2CDevice(i2c, address)
 
-
-    def _read_reg(self, reg:int, data:bytearray) -> None:
+    def _read_reg(self, reg: int, data: bytearray) -> None:
         """
         Read a generic device register.
 
@@ -554,8 +581,7 @@ class ILPS28QSW:
         with self.device as i2c:
             i2c.write_then_readinto(reg.to_bytes(), data)
 
-
-    def _write_reg(self, reg:int, data:bytes) -> None:
+    def _write_reg(self, reg: int, data: bytes) -> None:
         """
         Write a generic device register.
 
@@ -566,26 +592,21 @@ class ILPS28QSW:
         with self.device as i2c:
             i2c.write(reg.to_bytes() + data)
 
+    @staticmethod
+    def from_fs1260_to_hPa(lsb: int) -> float:
+        return lsb / 1048576.0  # 4096.0f * 256
 
     @staticmethod
-    def from_fs1260_to_hPa(lsb:int) -> float:
-        return lsb / 1048576.0 # 4096.0f * 256
-
-
-    @staticmethod
-    def from_fs4060_to_hPa(lsb:int) -> float:
-        return lsb /  524288.0 # 2048.0 * 256
-
+    def from_fs4060_to_hPa(lsb: int) -> float:
+        return lsb / 524288.0  # 2048.0 * 256
 
     @staticmethod
-    def from_lsb_to_celsius(lsb:int) -> float:
+    def from_lsb_to_celsius(lsb: int) -> float:
         return lsb / 100.0
 
-
     @staticmethod
-    def from_lsb_to_mv(lsb:int) -> float:
+    def from_lsb_to_mv(lsb: int) -> float:
         return lsb / 426000.0
-
 
     def get_id(self) -> ID:
         """
@@ -599,8 +620,7 @@ class ILPS28QSW:
         self._read_reg(WHO_AM_I, reg)
         return val
 
-
-    def set_bus_mode(self, val:BusMode) -> None:
+    def set_bus_mode(self, val: BusMode) -> None:
         """
         Configure the bus operating mode.
 
@@ -614,7 +634,6 @@ class ILPS28QSW:
         i3c_if_ctrl.asf_on = val.filter & 0x01
         i3c_if_ctrl.I3C_Bus_Avb_Sel = val.bus_avb_time & 0x03
         self._write_reg(I3C_IF_CTRL, i3c_if_ctrl)
-
 
     def get_bus_mode(self) -> BusMode:
         """
@@ -648,8 +667,7 @@ class ILPS28QSW:
 
         return val
 
-
-    def set_init(self, val:Init) -> None:
+    def set_init(self, val: Init) -> None:
         reg = bytearray(2)
         ctrl_reg2 = CtrlReg2.from_buffer(reg)
         ctrl_reg3 = CtrlReg3.from_buffer(reg, 1)
@@ -669,7 +687,6 @@ class ILPS28QSW:
         else:
             ctrl_reg2.swreset = _PROPERTY_ENABLE
             self._write_reg(CTRL_REG2, ctrl_reg2)
-
 
     def get_status(self) -> Status:
         """
@@ -693,18 +710,17 @@ class ILPS28QSW:
         self._read_reg(INTERRUPT_CFG, interrupt_cfg_buf)
 
         return Stat(
-            sw_reset  = ctrl_reg2.swreset,
-            boot      = int_source.boot_on,
-            drdy_pres = status.p_da,
-            drdy_temp = status.t_da,
-            ovr_pres  = status.p_or,
-            ovr_temp  = status.t_or,
-            end_meas  = ~ctrl_reg2.oneshot,
-            ref_done  = ~interrupt_cfg.autozero,
+            sw_reset=ctrl_reg2.swreset,
+            boot=int_source.boot_on,
+            drdy_pres=status.p_da,
+            drdy_temp=status.t_da,
+            ovr_pres=status.p_or,
+            ovr_temp=status.t_or,
+            end_meas=~ctrl_reg2.oneshot,
+            ref_done=~interrupt_cfg.autozero,
         )
 
-
-    def set_pin_conf(self, val:PinConf) -> None:
+    def set_pin_conf(self, val: PinConf) -> None:
         """
         Set the electrical pin configuration.
 
@@ -719,7 +735,6 @@ class ILPS28QSW:
         if_ctrl.sda_pu_en = val.sda_pull_up
         self._write_reg(IF_CTRL, if_ctrl)
 
-
     def get_pin_conf(self) -> PinConf:
         """
         Get the electrical pin configuration.
@@ -732,10 +747,9 @@ class ILPS28QSW:
 
         self._read_reg(IF_CTRL, if_ctrl_buf)
 
-        return PinConf (
-            sda_pull_up = if_ctrl.sda_pu_en,
+        return PinConf(
+            sda_pull_up=if_ctrl.sda_pu_en,
         )
-
 
     def get_all_sources(self) -> AllSources:
         """
@@ -756,18 +770,17 @@ class ILPS28QSW:
         self._read_reg(FIFO_STATUS2, fifo_status2_buf)
 
         return AllSources(
-            drdy_pres   = status.p_da,
-            drdy_temp   = status.t_da,
-            over_pres   = int_source.ph,
-            under_pres  = int_source.pl,
-            thrsld_pres = int_source.ia,
-            fifo_full   = fifo_status2.fifo_full_ia,
-            fifo_ovr    = fifo_status2.fifo_ovr_ia,
-            fifo_th     = fifo_status2.fifo_wtm_ia,
+            drdy_pres=status.p_da,
+            drdy_temp=status.t_da,
+            over_pres=int_source.ph,
+            under_pres=int_source.pl,
+            thrsld_pres=int_source.ia,
+            fifo_full=fifo_status2.fifo_full_ia,
+            fifo_ovr=fifo_status2.fifo_ovr_ia,
+            fifo_th=fifo_status2.fifo_wtm_ia,
         )
 
-
-    def set_mode(self, val:Md) -> None:
+    def set_mode(self, val: Md) -> None:
         """
         Set the sensor conversion parameters.
 
@@ -822,7 +835,6 @@ class ILPS28QSW:
         ctrl_reg2.fs_mode = val.fs
 
         self._write_reg(CTRL_REG1, reg)
-
 
     def get_mode(self) -> Md:
         """
@@ -899,8 +911,7 @@ class ILPS28QSW:
         val.interleaved_mode = ctrl_reg3.ah_qvar_p_auto_en
         return val
 
-
-    def trigger_sw(self, md:Md) -> None:
+    def trigger_sw(self, md: Md) -> None:
         """
         Ssoftware trigger for One-Shot.
 
@@ -916,8 +927,7 @@ class ILPS28QSW:
             ctrl_reg2.oneshot = _PROPERTY_ENABLE
             self._write_reg(CTRL_REG2, ctrl_reg2)
 
-
-    def set_ah_qvar_en(self, val:int) -> None:
+    def set_ah_qvar_en(self, val: int) -> None:
         """
         Enable or disable the AH/QVAR function.
 
@@ -933,7 +943,6 @@ class ILPS28QSW:
         ctrl_reg3.ah_qvar_en = val
         self._write_reg(CTRL_REG3, ctrl_reg3)
 
-
     def get_ah_qvar_en(self) -> int:
         """
         Get the status of the AH/QVAR function enable setting.
@@ -946,8 +955,7 @@ class ILPS28QSW:
         self._read_reg(CTRL_REG3, ctrl_reg3_buf)
         return ctrl_reg3.ah_qvar_en
 
-
-    def get_data(self, md:Md) -> Data:
+    def get_data(self, md: Md) -> Data:
         """
         Retrieve sensor data.
 
@@ -960,7 +968,7 @@ class ILPS28QSW:
         self._read_reg(PRESS_OUT_XL, buff)
 
         # pressure conversion
-        data.pressure.raw = int.from_bytes(buff, byteorder='little', signed=True) << 8
+        data.pressure.raw = int.from_bytes(buff, byteorder="little", signed=True) << 8
 
         if md.interleaved_mode == 1:
             if (buff[0] & 0x1) == 0:
@@ -992,7 +1000,6 @@ class ILPS28QSW:
 
         return data
 
-
     def get_pressure_raw(self) -> int:
         """
         Get the pressure output value.
@@ -1002,8 +1009,7 @@ class ILPS28QSW:
         """
         reg = bytearray(3)
         self._read_reg(PRESS_OUT_XL, reg)
-        return int.from_bytes(reg, byteorder='little', signed=False) << 8
-
+        return int.from_bytes(reg, byteorder="little", signed=False) << 8
 
     def get_temperature_raw(self) -> int:
         """
@@ -1014,8 +1020,7 @@ class ILPS28QSW:
         """
         reg = bytearray(2)
         self._read_reg(TEMP_OUT_L, reg)
-        return int.from_bytes(reg, byteorder='little', signed=True)
-
+        return int.from_bytes(reg, byteorder="little", signed=True)
 
     def get_ah_qvar_data(self) -> AhQvarData:
         """
@@ -1030,15 +1035,14 @@ class ILPS28QSW:
         self._read_reg(PRESS_OUT_XL, buff)
 
         # QVAR conversion
-        data.raw = int.from_bytes(buff, byteorder='little', signed=True) << 8
+        data.raw = int.from_bytes(buff, byteorder="little", signed=True) << 8
         data.lsb = data.raw >> 8
 
         data.mv = self.from_lsb_to_mv(data.lsb)
 
         return data
 
-
-    def set_fifo_mode(self, val:FifoMd):
+    def set_fifo_mode(self, val: FifoMd):
         """
         Set the FIFO operation mode.
 
@@ -1062,7 +1066,6 @@ class ILPS28QSW:
         fifo_wtm.wtm = val.watermark
 
         self._write_reg(FIFO_CTRL, reg)
-
 
     def get_fifo_mode(self) -> FifoMd:
         """
@@ -1097,7 +1100,6 @@ class ILPS28QSW:
 
         return val
 
-
     def get_fifo_level(self) -> int:
         """
         Get the number of samples stored in FIFO.
@@ -1110,9 +1112,7 @@ class ILPS28QSW:
         self._read_reg(FIFO_STATUS1, fifo_status1_buf)
         return fifo_status1.fss
 
-
-
-    def get_fifo_data(self, samp:int, md:Md) -> FifoData:
+    def get_fifo_data(self, samp: int, md: Md) -> FifoData:
         """
         Get the software trigger for One-Shot mode.
 
@@ -1129,11 +1129,11 @@ class ILPS28QSW:
 
         for i in range(samp):
             self._read_reg(FIFO_DATA_OUT_PRESS_XL, fifo_data)
-            data[i].raw = int.from_bytes(fifo_data, byteorder='little', signed=True) << 8
+            data[i].raw = int.from_bytes(fifo_data, byteorder="little", signed=True) << 8
 
         for i in range(samp):
             self._read_reg(FIFO_DATA_OUT_PRESS_XL, fifo_data)
-            data[i].raw = int.from_bytes(fifo_data, byteorder='little', signed=True) << 8
+            data[i].raw = int.from_bytes(fifo_data, byteorder="little", signed=True) << 8
 
             if md.interleaved_mode == 1:
                 if (fifo_data[0] & 1) == 0:
@@ -1158,8 +1158,7 @@ class ILPS28QSW:
                     data[i].hpa = 0
                 data[i].lsb = 0
 
-
-    def set_interrupt_mode(self, val:IntMode) -> None:
+    def set_interrupt_mode(self, val: IntMode) -> None:
         """
         Set the interrupt pins hardware signal configuration.
 
@@ -1174,7 +1173,6 @@ class ILPS28QSW:
         interrupt_cfg.lir = val.int_latched
         self._write_reg(INTERRUPT_CFG, interrupt_cfg)
 
-
     def get_interrupt_mode(self) -> IntMode:
         """
         Get the interrupt pins hardware signal configuration.
@@ -1186,11 +1184,10 @@ class ILPS28QSW:
         interrupt_cfg = InterruptCfg.from_buffer(interrupt_cfg_buf)
         self._read_reg(INTERRUPT_CFG, interrupt_cfg_buf)
         return IntMode(
-            int_latched = interrupt_cfg.lir,
+            int_latched=interrupt_cfg.lir,
         )
 
-
-    def set_int_on_threshold_mode(self, val:IntThMd) -> None:
+    def set_int_on_threshold_mode(self, val: IntThMd) -> None:
         """
         Set the Wake-up and Wake-up to Sleep configuration.
 
@@ -1209,7 +1206,6 @@ class ILPS28QSW:
         ths_p_l.ths = val.threshold - (ths_p_h.ths << 8)
 
         self._write_reg(INTERRUPT_CFG, reg)
-
 
     def get_int_on_threshold_mode(self) -> IntThMd:
         """
@@ -1231,8 +1227,7 @@ class ILPS28QSW:
         val.threshold = (ths_p_h.ths << 8) | ths_p_l.ths
         return val
 
-
-    def set_reference_mode(self, val:RefMd) -> None:
+    def set_reference_mode(self, val: RefMd) -> None:
         """
         Configure Wake-up and Wake-up to Sleep.
 
@@ -1247,11 +1242,10 @@ class ILPS28QSW:
         interrupt_cfg.autozero = val.get_ref
         interrupt_cfg.autorefp = val.apply_ref & 0x01
 
-        interrupt_cfg.reset_az  = (val.apply_ref & 0x02) >> 1
+        interrupt_cfg.reset_az = (val.apply_ref & 0x02) >> 1
         interrupt_cfg.reset_arp = (val.apply_ref & 0x02) >> 1
 
         self._write_reg(INTERRUPT_CFG, interrupt_cfg)
-
 
     def get_reference_mode(self) -> RefMd:
         """
@@ -1278,7 +1272,6 @@ class ILPS28QSW:
 
         return val
 
-
     def get_refp(self) -> int:
         """
         Get the reference pressure LSB data.
@@ -1288,19 +1281,17 @@ class ILPS28QSW:
         """
         reg = bytearray(2)
         self._read_reg(REF_P_L, reg)
-        return int.from_bytes(reg, byteorder='little', signed=True)
+        return int.from_bytes(reg, byteorder="little", signed=True)
 
-
-    def set_opc(self, val:int) -> None:
+    def set_opc(self, val: int) -> None:
         """
         Configure Wake-up and Wake-up to Sleep.
 
         Args:
             val: Configuration parameters.
         """
-        reg = bytearray(val.to_bytes(2, byteorder='little', signed=True))
+        reg = bytearray(val.to_bytes(2, byteorder="little", signed=True))
         self._write_reg(RPDS_L, reg)
-
 
     def get_opc(self) -> int:
         """
@@ -1311,4 +1302,4 @@ class ILPS28QSW:
         """
         reg = bytearray(2)
         self._read_reg(RPDS_L, reg)
-        return int.from_bytes(reg, byteorder='little', signed=True)
+        return int.from_bytes(reg, byteorder="little", signed=True)
