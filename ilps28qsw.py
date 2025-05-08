@@ -579,7 +579,7 @@ class ILPS28QSW:
             data: Buffer that stores the data read.
         """
         with self.device as i2c:
-            i2c.write_then_readinto(reg.to_bytes(), data)
+            i2c.write_then_readinto(reg.to_bytes(1, 'big'), data)
 
     def _write_reg(self, reg: int, data: bytes) -> None:
         """
@@ -590,7 +590,7 @@ class ILPS28QSW:
             data: Data to write into the register.
         """
         with self.device as i2c:
-            i2c.write(reg.to_bytes() + data)
+            i2c.write(reg.to_bytes(1, 'big') + data)
 
     @staticmethod
     def from_fs1260_to_hPa(lsb: int) -> float:

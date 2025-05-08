@@ -15,6 +15,7 @@ name = "circuitpython-ilps28qsw"
 description = "CircuitPython module for the ILPS28QSW absolute digital output barometer."
 version = "0.0.0+auto.0"
 readme = "README.rst"
+requires-python = ">= 3.9"
 authors = [
     {name = "mrv96"}
 ]
