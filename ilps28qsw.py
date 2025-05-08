@@ -567,8 +567,8 @@ class RefMd(Structure):
 
 
 class ILPS28QSW:
-    def __init__(self, i2c: I2C, address: int = I2C_ADD) -> None:
-        self.device = I2CDevice(i2c, address)
+    def __init__(self, i2c: I2C, address: int = I2C_ADD, probe: bool=True) -> None:
+        self.device = I2CDevice(i2c, address, probe)
 
     def _read_reg(self, reg: int, data: bytearray) -> None:
         """
